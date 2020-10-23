@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'quiz_brain.dart';
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 QuizBrain quizBrain = QuizBrain();
 
@@ -32,7 +33,32 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> quizzleList = [];
-  int questionNumber = 0;
+
+  void verifyAnswer(bool verify) {
+    setState(() {
+      bool correctAnswer = quizBrain.getQuestionAnswer();
+      if (correctAnswer == verify) {
+        quizzleList.add(
+          Icon(
+            Icons.check,
+            color: Colors.green,
+          ),
+        );
+      } else
+        quizzleList.add(
+          Icon(
+            Icons.cancel,
+            color: Colors.red,
+          ),
+        );
+      if (quizBrain.finishQuiz()) {
+        Alert(context: context, title: "Quiz", desc: "Você finalizou o Quiz!!.")
+            .show();
+        quizzleList.clear();
+      } else
+        quizBrain.nextQuestion();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,24 +96,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                setState(() {
-                  bool correctAnswer = quizBrain.getQuestionAnswer();
-                  if (correctAnswer == true) {
-                    quizzleList.add(
-                      Icon(
-                        Icons.check,
-                        color: Colors.green,
-                      ),
-                    );
-                  } else
-                    quizzleList.add(
-                      Icon(
-                        Icons.cancel,
-                        color: Colors.red,
-                      ),
-                    );
-                  quizBrain.nextQuestion();
-                });
+                verifyAnswer(true);
               },
             ),
           ),
@@ -105,24 +114,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                setState(() {
-                  bool correctAnswer = quizBrain.getQuestionAnswer();
-                  if (correctAnswer == false) {
-                    quizzleList.add(
-                      Icon(
-                        Icons.check,
-                        color: Colors.green,
-                      ),
-                    );
-                  } else
-                    quizzleList.add(
-                      Icon(
-                        Icons.cancel,
-                        color: Colors.red,
-                      ),
-                    );
-                  quizBrain.nextQuestion();
-                });
+                verifyAnswer(false);
                 //The user picked false.
               },
             ),
